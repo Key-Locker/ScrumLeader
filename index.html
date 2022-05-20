@@ -1,7 +1,49 @@
 <!DOCTYPE html>
 <html>
-<body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
-</body>
+    <head>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <title>
+        Scrum Leader
+    </title>
+    <body>
+        <div class="content">
+            <h1>Scrum Leader for <span id='date-time'></span>: </h1>
+            
+            <h2><span id='scrum-leader'></span></h2>
+        </div>
+    </body>
+
+    <script>
+        const currentDate = new Date();
+        const format = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+        document.getElementById("date-time").innerHTML = currentDate.toLocaleDateString('en-us', format);
+
+        function hasOneDayPassed() {
+            var date = new Date().toLocaleDateString();
+            if( localStorage.scrumDate == date ) 
+                return false;
+
+            localStorage.scrumDate = date;
+            return true;
+        }
+
+
+        const interns = ["Kevin", "Fatima", "Rubbia", "Eman", "Haneeah", "Saffana", "Mathew", "Faraaz", "Owen", "Ian", "Rayyan", "Ayesha", "Ahmed"];
+        
+        function chooseScrumLeader(){
+
+            if(!hasOneDayPassed()){
+                localStorage.setItem("scrumLeader", interns[localStorage.iterator])
+            }else if (currentDate.getDay() != 0 || currentDate.getDay() != 6){
+                if (localStorage.iterator >= interns.length-1){
+                    localStorage.iterator = 0;
+                }else{
+                    localStorage.iterator = Number(localStorage.iterator)+1;
+                }
+            }
+            document.getElementById("scrum-leader").innerHTML = localStorage.getItem("scrumLeader");
+        }
+        chooseScrumLeader();
+    </script>
 </html>
