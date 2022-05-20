@@ -8,15 +8,29 @@
     </title>
     <body>
         <div class="content">
-            <h1>Scrum Leader for <span id='date-time'></span>: </h1>
+            <h1>Scrum Leader for <span id='date-time'></span> is <span id='scrum-leader'></span></h1>
             
-            <h2><span id='scrum-leader'></span></h2>
+            <hr>
+            <select id="interns">
+            </select>
+
+            <form id="login-form">
+                <div class="password">
+                    <input type="password" placeholder="Enter Password" name="password" id="password-field" required>
+                    <input type="submit" value="Login" id="login-form-submit">    
+                </div>
+                <div>
+                    <p id="login-error-msg">Invalid password</p>
+                </div>
+            </form>
         </div>
     </body>
 
     <script>
         const currentDate = new Date();
         const format = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+        const interns = ["Kevin", "Fatima", "Rubbia", "Eman", "Haneeah", "Saffana", "Mathew", "Faraaz", "Owen", "Ian", "Rayyan", "Ayesha", "Ahmed", "Fartab"];
+
         document.getElementById("date-time").innerHTML = currentDate.toLocaleDateString('en-us', format);
 
         function hasOneDayPassed() {
@@ -28,15 +42,11 @@
             return true;
         }
 
-
-        const interns = ["Kevin", "Fatima", "Rubbia", "Eman", "Haneeah", "Saffana", "Mathew", "Faraaz", "Owen", "Ian", "Rayyan", "Ayesha", "Ahmed"];
-        
         function chooseScrumLeader(){
-
             if(!hasOneDayPassed()){
                 localStorage.setItem("scrumLeader", interns[localStorage.iterator])
             }else if (currentDate.getDay() != 0 || currentDate.getDay() != 6){
-                if (localStorage.iterator >= interns.length-1){
+                if (localStorage.iterator >= interns.length-2){
                     localStorage.iterator = 0;
                 }else{
                     localStorage.iterator = Number(localStorage.iterator)+1;
@@ -44,6 +54,51 @@
             }
             document.getElementById("scrum-leader").innerHTML = localStorage.getItem("scrumLeader");
         }
+
+        var selectStudent = document.getElementById("interns");
+        for(intern in interns) {
+            selectStudent.options[selectStudent.options.length] = new Option(interns[intern], intern);
+        }
+
+
         chooseScrumLeader();
     </script>
+
+    <script>
+        const loginForm = document.getElementById("login-form");
+        const loginButton = document.getElementById("login-form-submit");
+        const loginErrorMsg = document.getElementById("login-error-msg");
+        const afterLogin = document.getElementById("after-login");
+
+
+        loginButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            const selectUsername = document.getElementById("interns");
+            const username = selectUsername.options[selectUsername.selectedIndex].text;
+            const password = loginForm.password.value;
+
+            if (localStorage.getItem(username) === null){
+                if ( password !== ""){
+                    localStorage.setItem(username, password);
+                }else{
+                    alert("Password cannot be empty")
+                }                
+            }
+
+            if (password === localStorage.getItem(username)) {
+                //alert("You have successfully logged in.");
+                sessionStorage.setItem("user", username);
+                if (username === "Fartab"){
+                    window.location.href="loggedinadmin.html";
+                }else{
+                    window.location.href="loggedin.html";
+                }
+            } else {
+                loginErrorMsg.style.opacity = 1;
+            }
+        })
+
+
+    </script>
+
 </html>

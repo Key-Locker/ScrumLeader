@@ -3,3 +3,23 @@
     text-align: center;
     margin: auto;
   }
+.password{
+    margin-top: 25px;
+    margin-bottom: 0px;
+}
+#interns{
+    margin-top: 20px;
+}
+#login-error-msg {
+    font-size: 12px;
+    font-weight: bold;
+    color: #ff0000;
+    opacity: 0;
+  }
+
+#after-login{
+    opacity: 0;
+}
+#scrumInput{
+    resize:both;
+}

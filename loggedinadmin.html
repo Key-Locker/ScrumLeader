@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <title>
+        Welcome
+    </title>
+    <body>
+        <div class="content">
+            <h1>Welcome <span id='current-user'></span></h1>
+            
+            <hr>
+            <h3>All Scrum Reports</h3>
+
+        </div>
+    </body>
+
+    <script>
+        if (sessionStorage.getItem("user") !== "Fartab"){
+            alert("Not an admin");
+            window.location.href="index.html";
+        }
+        document.getElementById("current-user").innerHTML = sessionStorage.getItem("user");
+    </script>
+
+</html>
