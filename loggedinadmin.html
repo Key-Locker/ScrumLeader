@@ -12,7 +12,14 @@
             
             <hr>
             <h3>All Scrum Reports</h3>
+            <table id="scrum-reports">
+                <tr>
+                  <th>Name</th>
+                  <th>Report</th>
+                </tr>
 
+
+            </table>
         </div>
     </body>
 
@@ -21,6 +28,25 @@
             alert("Not an admin");
             window.location.href="index.html";
         }
+        const interns = ["Kevin", "Fatima", "Rubbia", "Eman", "Haneeah", "Saffana", "Mathew", "Faraaz", "Owen", "Ian", "Rayyan", "Ayesha", "Ahmed"];
+
+        for (let intern of interns) {
+            let usrReport = intern + "Report";
+            scrumReportRow = document.createElement('tr');
+
+            scrumName = document.createElement('td');
+            scrumName.innerHTML = intern;
+
+            scrumReport = document.createElement('td');
+            scrumReport.innerHTML = localStorage.getItem(usrReport);
+            
+
+
+            document.getElementById("scrum-reports").appendChild(scrumReportRow);
+            scrumReportRow.appendChild(scrumName);
+            scrumReportRow.appendChild(scrumReport);
+        }
+
         document.getElementById("current-user").innerHTML = sessionStorage.getItem("user");
     </script>
 

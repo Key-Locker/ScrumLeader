@@ -23,3 +23,15 @@
 #scrumInput{
     resize:both;
 }
+
+table{
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin-left: auto;
+    margin-right: auto;
+}
+th, td{
+    padding: 10px 20px;
+    border: 1px solid #000;
+    word-wrap: normal;
+}

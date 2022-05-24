@@ -13,7 +13,7 @@
             <hr>
             <select id="interns">
             </select>
-
+            <!-- <button onclick="writeLocalStorage()"></button> -->
             <form id="login-form">
                 <div class="password">
                     <input type="password" placeholder="Enter Password" name="password" id="password-field" required>
@@ -43,12 +43,17 @@
         }
 
         function chooseScrumLeader(){
+            if(localStorage.getItem("scrumLeader", interns[localStorage.iterator]) === null){
+                localStorage.iterator = 0;
+                localStorage.setItem("scrumLeader", interns[localStorage.iterator]);
+            }
             if(!hasOneDayPassed()){
-                localStorage.setItem("scrumLeader", interns[localStorage.iterator])
+                localStorage.setItem("scrumLeader", interns[localStorage.iterator]);
             }else if (currentDate.getDay() != 0 || currentDate.getDay() != 6){
                 if (localStorage.iterator >= interns.length-2){
                     localStorage.iterator = 0;
                 }else{
+                    writeLocalStorage();
                     localStorage.iterator = Number(localStorage.iterator)+1;
                 }
             }
@@ -60,6 +65,14 @@
             selectStudent.options[selectStudent.options.length] = new Option(interns[intern], intern);
         }
 
+
+        function writeLocalStorage(){
+            Object.keys(data).forEach(function(key) { localStorage.setItem(key, data[key])})
+        }
+
+        function getLocalStorage() {
+            return JSON.stringify(localStorage)
+        }
 
         chooseScrumLeader();
     </script>
@@ -76,10 +89,16 @@
             const selectUsername = document.getElementById("interns");
             const username = selectUsername.options[selectUsername.selectedIndex].text;
             const password = loginForm.password.value;
-
+            //alert(localStorage.getItem(username))
             if (localStorage.getItem(username) === null){
                 if ( password !== ""){
-                    localStorage.setItem(username, password);
+                    let confirmPassword = prompt("Please confirm your password:", "");
+                    if (confirmPassword === password){
+                        localStorage.setItem(username, password);
+                    }else{
+                        alert("Passwords did not match")
+
+                    }
                 }else{
                     alert("Password cannot be empty")
                 }                
@@ -88,6 +107,7 @@
             if (password === localStorage.getItem(username)) {
                 //alert("You have successfully logged in.");
                 sessionStorage.setItem("user", username);
+                sessionStorage.setItem("scrumLeader", localStorage.getItem("scrumLeader"));
                 if (username === "Fartab"){
                     window.location.href="loggedinadmin.html";
                 }else{

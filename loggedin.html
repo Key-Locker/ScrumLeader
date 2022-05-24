@@ -8,25 +8,97 @@
     </title>
     <body>
         <div class="content">
-            <h1>Welcome <span id='current-user'></span></h1>
-            
+            <h1>Scrum Leader for <span id='date-time'></span> is <span id='scrum-leader'></span></h1>
+            <button onclick="prevPerson()">Prev</button>
+            <button onclick="skipPerson()">Skip</button>
+            <p>Last skip made by <span id='last-changed'></span></p>
             <hr>
-            <h3>Enter Scrum Report</h3>
+            <h2>Welcome <span id='current-user'></span></h2>
+            <h4>You are the Scrum Master <span id='days-until-master'></span></h4>
+            <h3>Please enter your Scrum Report</h3>
+            
             <textarea id="scrum-report" name="Text" rows="4" cols="50" value=""></textarea>
                 <br><br>
-            <input type="submit" onclick="submitButton()"value="Submit">
+            <input type="submit" onclick="submitButton()" value="Submit">
         </div>
     </body>
 
     <script>
+        const currentDate = new Date();
+        const format = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+        const interns = ["Kevin", "Fatima", "Rubbia", "Eman", "Haneeah", "Saffana", "Mathew", "Faraaz", "Owen", "Ian", "Rayyan", "Ayesha", "Ahmed", "Fartab"];
+
+        document.getElementById("date-time").innerHTML = currentDate.toLocaleDateString('en-us', format);
+        document.getElementById("scrum-leader").innerHTML = sessionStorage.getItem("scrumLeader");
+        document.getElementById("last-changed").innerHTML = localStorage.getItem("lastUsedChange");
         if (sessionStorage.getItem("user") === null){
             window.location.href="index.html";
         }
 
+        
+        if (localStorage.iterator > interns.indexOf(sessionStorage.getItem("user"))){
+            nextVal =  interns.length - (localStorage.iterator - interns.indexOf(sessionStorage.getItem("user")))-1;
+            if (nextVal === 1){
+                document.getElementById("days-until-master").innerHTML = "TOMORROW";
+            }else{
+                document.getElementById("days-until-master").innerHTML = "in " + nextVal + " days";
+            }
+        }else if (localStorage.iterator < interns.indexOf(sessionStorage.getItem("user"))){
+            nextVal = interns.indexOf(sessionStorage.getItem("user")) - localStorage.iterator;
+            if (nextVal === 1){
+                document.getElementById("days-until-master").innerHTML = "TOMORROW";
+            }else{
+                document.getElementById("days-until-master").innerHTML = "in " + nextVal + " days";
+            }
+        }else{
+            document.getElementById("days-until-master").innerHTML = "TODAY";
+        }
+
+
+
         function submitButton(){
-            alert("Submitted:\n\n" + document.getElementById("scrum-report").value);
+            if(confirm("Confirm submission? You will be logged out.\n\n\"" + document.getElementById("scrum-report").value + "\"")){
+                let usrReport = sessionStorage.getItem("user") + "Report";
+                localStorage.setItem(usrReport, document.getElementById("scrum-report").value);
+                sessionStorage.clear();
+                window.location.href="index.html";
+            }
             
-            window.location.href="index.html";
+            
+        }
+        
+        function prevPerson(){
+            
+            //alert(localStorage.iterator);
+            if (localStorage.iterator > 0){
+                localStorage.iterator = Number(localStorage.iterator)-1;
+            }else{
+                localStorage.iterator = 12;
+            }
+            sessionStorage.setItem("scrumLeader", interns[localStorage.iterator]);
+            localStorage.setItem("scrumLeader", interns[localStorage.iterator]);
+            document.getElementById("scrum-leader").innerHTML = localStorage.getItem("scrumLeader");
+
+            localStorage.setItem("lastUsedChange", sessionStorage.getItem("user"));
+            document.getElementById("last-changed").innerHTML = localStorage.getItem("lastUsedChange");
+
+        }
+
+        function skipPerson(){
+            //localStorage.setItem("scrumLeader", interns[localStorage.iterator]);
+            //alert(localStorage.iterator);
+            if (localStorage.iterator < 12){
+                localStorage.iterator = Number(localStorage.iterator)+1;
+            }else{
+                localStorage.iterator = 0;
+            }
+            sessionStorage.setItem("scrumLeader", interns[localStorage.iterator]);
+            localStorage.setItem("scrumLeader", interns[localStorage.iterator]);
+            document.getElementById("scrum-leader").innerHTML = localStorage.getItem("scrumLeader");
+
+            localStorage.setItem("lastUsedChange", sessionStorage.getItem("user"));
+            document.getElementById("last-changed").innerHTML = localStorage.getItem("lastUsedChange");
+
         }
 
         document.getElementById("current-user").innerHTML = sessionStorage.getItem("user");
