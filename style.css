@@ -7,6 +7,9 @@
     margin-top: 25px;
     margin-bottom: 0px;
 }
+#date-picker{
+    padding-bottom: 1rem;
+}
 #interns{
     margin-top: 20px;
 }
@@ -27,6 +30,7 @@
 table{
     border-collapse: collapse;
     border-spacing: 0;
+    text-align: left;
     margin-left: auto;
     margin-right: auto;
 }

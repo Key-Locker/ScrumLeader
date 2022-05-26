@@ -25,14 +25,15 @@
             </form>
         </div>
     </body>
-    <script src="https://www.gstatic.com/firebasejs/7.16.0/firebase.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script></head>
 
     <script type="module">
         //const interns = ["Kevin", "Fatima", "Rubbia", "Eman", "Haneeah", "Saffana", "Mathew", "Faraaz", "Owen", "Ian", "Rayyan", "Ayesha", "Ahmed", "Fartab"];
 
         // Importing & initializing Firebase database
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-app.js";
-        import{ getDatabase, ref, set, child, push, get, update } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-database.js";
+        import { getDatabase, ref, set, child, push, get, update } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-database.js";
         const firebaseConfig = {
             apiKey: "AIzaSyBaLJDFm7oG1KsIqDOnZFwmH4ITr60Zk9U",
             authDomain: "scrumleader-d1283.firebaseapp.com",
@@ -43,7 +44,9 @@
             appId: "1:315809210687:web:2f9a62abdaf4ebb540f38a",
             measurementId: "G-TSYJ61YPH7"
         };
+        
         const app = initializeApp(firebaseConfig);
+
         const database = getDatabase(app);
         const dbRef = ref(getDatabase());
 
@@ -54,7 +57,7 @@
         const currentDate = new Date();
         const format = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
         let interns = [];
-
+        
         // Getting all of the interns information from the database
         get(child(dbRef, `Users/Interns`)).then((snapshot) => {
             if (snapshot.exists()) {
@@ -71,7 +74,7 @@
                 console.log("No data available");
             }
         }).catch((error) => {
-        console.error(error);
+            console.error(error);
         });
         
         
@@ -80,79 +83,82 @@
 
         // Function for checking if a day has passed to update the current day in the header
         function hasOneDayPassed() {
-            var date = new Date().toLocaleDateString();
-            if( localStorage.scrumDate == date ) 
-                return false;
+            get(child(dbRef, `ChooseLeader/Date/`)).then((snapshot) => {
+                const curDate = currentDate.toLocaleDateString("en-US").replace("/", "-").replace("/", "-");
+                if(snapshot === curDate) 
+                    return false;
 
-            localStorage.scrumDate = date;
-            return true;
+                const updates = {};
+                updates['ChooseLeader/Date/'] = curDate;
+                update(dbRef, updates);
+                return true;
+            }).catch((error) => {
+                console.error(error);
+            });
         }
 
 
-        //et(child(dbRef, `Users/Interns/${username}`))
+        //get(child(dbRef, `Users/Interns/${username}`))
         // get(child(dbRef, `Users/Interns/${username}`)).then((snapshot) => {
         // }).catch((error) => {
         //     console.error(error);
         // });
+
+
         // Chooses the next scrum leader by indexing who is who
 
         function chooseScrumLeader(){
             
-            get(child(dbRef, `ScrumLeader`)).then((snapshot) => {
+            // get(child(dbRef, `ChooseLeader/ScrumLeader/`)).then((snapshot) => {
                 
-                if(snapshot.val() === "Intern"){
-                    // set(ref(dbRef, 'ScrumLeader'), {
-                    //     ScrumLeader: "name"
-                    // });
-                    const newPostKey = push(child(dbRef, 'ScrumLeader')).key;
-                    console.log(newPostKey);
-                    const updates = "test";
+            //     if(snapshot.val() === "Intern"){
+
+            //         const updates = {};
+            //         updates['ChooseLeader/ScrumLeader/'] = "Kevin";
+            //         updates['ChooseLeader/Index/'] = 1;
+            //         update(dbRef, updates);
+                    
+            //     }
+            // }).catch((error) => {
+            //     console.error(error);
+            // });
+            
+            if(!hasOneDayPassed()) return false;
+                
+            get(child(dbRef, `ChooseLeader/`)).then((snapshot) => {
+
+                if (currentDate.getDay() != 0 || currentDate.getDay() != 6){
+                    //let indexOfNewIntern = interns.indexOf(snapshot.val())
+                    let pastScrumLeader = snapshot.child("ScrumLeader/").val();
+                    let index = snapshot.child("Index/").val();
+                    const updates = {};
+                    
+                    if (index >= interns.length-2){
+                        index = 0;
+                    }else{
+                        index++;
+                        
+                    }
+                    updates['ChooseLeader/ScrumLeader/'] = interns[index];
+                    updates['ChooseLeader/Index/'] = index;
                     update(dbRef, updates);
-                }
+                }   
+                
+
             }).catch((error) => {
                 console.error(error);
             });
-            
-            if(!hasOneDayPassed()){
-                
-                get(child(dbRef, `ScrumLeader`)).then((snapshot) => {
-                
-
-                }).catch((error) => {
-                    console.error(error);
-                });
-            
-            }else if (currentDate.getDay() != 0 || currentDate.getDay() != 6){
-                if (localStorage.iterator >= interns.length-2){
-                    localStorage.iterator = 0;
-                }else{
-                    writeLocalStorage();
-                    localStorage.iterator = Number(localStorage.iterator)+1;
-                }
-            }
-            document.getElementById("scrum-leader").innerHTML = localStorage.getItem("scrumLeader");
         }
-
-
-
-        // function chooseScrumLeader(){
-        //     if(localStorage.getItem("scrumLeader", interns[localStorage.iterator]) === null){
-        //         localStorage.iterator = 0;
-        //         localStorage.setItem("scrumLeader", interns[localStorage.iterator]);
-        //     }
-        //     if(!hasOneDayPassed()){
-        //         localStorage.setItem("scrumLeader", interns[localStorage.iterator]);
-        //     }else if (currentDate.getDay() != 0 || currentDate.getDay() != 6){
-        //         if (localStorage.iterator >= interns.length-2){
-        //             localStorage.iterator = 0;
-        //         }else{
-        //             writeLocalStorage();
-        //             localStorage.iterator = Number(localStorage.iterator)+1;
-        //         }
-        //     }
-        //     document.getElementById("scrum-leader").innerHTML = localStorage.getItem("scrumLeader");
-        // }
-
+        get(child(dbRef, `ChooseLeader/ScrumLeader/`)).then((SL) => {
+            sessionStorage.setItem("scrumLeader", SL.val());
+        }).catch((error) => {
+            console.error(error);
+        });
+                                    
+        while(sessionStorage.getItem("scrumLeader") === null){
+            setTimeout('', 5);
+        }
+        document.getElementById("scrum-leader").innerHTML = sessionStorage.getItem("scrumLeader");
         var selectStudent = document.getElementById("interns");
 
         chooseScrumLeader();
@@ -174,29 +180,43 @@
             get(child(dbRef, `Users/Interns/${username}`)).then((snapshot) => {
                 if (snapshot.exists()) {
                     if (snapshot.val() === "Summer20"){
-                    if ( password !== ""){
-                        if (password === snapshot.val()){
-                            let createPassword = prompt("Please create a new password:", "");
-                            let confirmPassword = prompt("Please confirm your password:", "");
-                            if (createPassword === confirmPassword){
-                                //localStorage.setItem(username, password);
-                                //writeUserData(username, password);
+                        if ( password !== ""){
+                            if (password === snapshot.val()){
+                                let passwordNotChanged = true;
+                                while (passwordNotChanged){
+                                    let createPassword = prompt("Please create a new password:", "");
+                                    let confirmPassword = prompt("Please confirm your password:", "");
+                                    if (createPassword === confirmPassword){
+                                        var encrptedText = CryptoJS.MD5(confirmPassword);
+                                        const passwordUpdates = {};
+                                        passwordUpdates[`Users/Interns/${username}`] = encrptedText.toString();
+                                        update(dbRef, passwordUpdates);
+                                        passwordNotChanged = false;
 
-                            }else{
-                                alert("Passwords did not match")
-                                
+                                    }else{
+                                        alert("Passwords did not match")
+                                    }
+                                }
                             }
                         }else{
-                            alert
-                        }
+                            alert("Password cannot be empty")
+                        }                
+                    } else {
+                        var encrptedText = CryptoJS.MD5(password);
+                        if (encrptedText.toString() === snapshot.val()) {
+                            //alert(snapshot.val());
+                            sessionStorage.setItem("user", username);
 
-                    }else{
-                        alert("Password cannot be empty")
-                    }                
-                } else {
-                    console.log("No data available");
+                            if (username === "Mathew"){
+                                window.location.href="loggedinadmin.html";
+                            }else{
+                                window.location.href="loggedin.html";
+                            }
+                        } else {
+                            loginErrorMsg.style.opacity = 1;
+                        }
+                    }
                 }
-            }
 
             }).catch((error) => {
                 console.error(error);
@@ -204,25 +224,29 @@
             
             // Logs users in and redirects them to their home page
             // Fartab is redirected to an admin page
-            get(child(dbRef, `Users/Interns/${username}`)).then((snapshot) => {
-
-                if (password === snapshot.val() && snapshot.val() !== "Summer20") {
-                //alert("You have successfully logged in.");
-                sessionStorage.setItem("user", username);
-                sessionStorage.setItem("scrumLeader", localStorage.getItem("scrumLeader"));
-                if (username === "Fartab"){
-                    window.location.href="loggedinadmin.html";
-                }else{
-                    window.location.href="loggedin.html";
-                }
-                } else {
-                    loginErrorMsg.style.opacity = 1;
-                }
-            
-            }).catch((error) => {
-                console.error(error);
-            });
         })
+
+        // var encrptedText = CryptoJS.MD5("testPass");
+        // alert(encrptedText);
+        // alert(CryptoJS.MD5(encrptedText));
+
+        if (sessionStorage.getItem(sessionStorage.getItem("user") + "Report") !== null){
+            //alert(currentDate.toLocaleDateString("en-US"));
+            const reports = {};
+            const curDate = currentDate.toLocaleDateString("en-US").replace("/", "-").replace("/", "-");
+
+            set(child(dbRef, `Reports/${sessionStorage.getItem("user")}/${curDate}/`),{
+                report: sessionStorage.getItem(sessionStorage.getItem("user") + "Report")
+            }); 
+
+            //reports[`Reports/${sessionStorage.getItem("user")}/${currentDate.toLocaleDateString("en-US")}`] = interns[index];
+            //update(dbRef, reports);
+            sessionStorage.clear();
+            // get(child(dbRef, `Reports/${sessionStorage.getItem("user")}/`)).then((snapshot) => {
+            // }).catch((error) => {
+            //     console.error(error);
+            // });
+        }
     </script>
 
 </html>

@@ -59,8 +59,7 @@
         function submitButton(){
             if(confirm("Confirm submission? You will be logged out.\n\n\"" + document.getElementById("scrum-report").value + "\"")){
                 let usrReport = sessionStorage.getItem("user") + "Report";
-                localStorage.setItem(usrReport, document.getElementById("scrum-report").value);
-                sessionStorage.clear();
+                sessionStorage.setItem(usrReport, document.getElementById("scrum-report").value);
                 window.location.href="index.html";
             }
             
