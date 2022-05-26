@@ -25,14 +25,60 @@
             </form>
         </div>
     </body>
+    <script src="https://www.gstatic.com/firebasejs/7.16.0/firebase.js"></script>
 
-    <script>
+    <script type="module">
+        //const interns = ["Kevin", "Fatima", "Rubbia", "Eman", "Haneeah", "Saffana", "Mathew", "Faraaz", "Owen", "Ian", "Rayyan", "Ayesha", "Ahmed", "Fartab"];
+
+        // Importing & initializing Firebase database
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-app.js";
+        import{ getDatabase, ref, set, child, push, get, update } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-database.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyBaLJDFm7oG1KsIqDOnZFwmH4ITr60Zk9U",
+            authDomain: "scrumleader-d1283.firebaseapp.com",
+            databaseURL: "https://scrumleader-d1283-default-rtdb.firebaseio.com",
+            projectId: "scrumleader-d1283",
+            storageBucket: "scrumleader-d1283.appspot.com",
+            messagingSenderId: "315809210687",
+            appId: "1:315809210687:web:2f9a62abdaf4ebb540f38a",
+            measurementId: "G-TSYJ61YPH7"
+        };
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const dbRef = ref(getDatabase());
+
+
+        /*  
+        *   Main scripts of the website
+        */  
         const currentDate = new Date();
         const format = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
-        const interns = ["Kevin", "Fatima", "Rubbia", "Eman", "Haneeah", "Saffana", "Mathew", "Faraaz", "Owen", "Ian", "Rayyan", "Ayesha", "Ahmed", "Fartab"];
+        let interns = [];
 
+        // Getting all of the interns information from the database
+        get(child(dbRef, `Users/Interns`)).then((snapshot) => {
+            if (snapshot.exists()) {
+                snapshot.forEach(function(child) {
+                    console.log(child.key+": "+child.val());
+                    
+                    // Creating an array with all of the interns names
+                    interns.push(child.key);
+
+                    // Setting each name to a dropdown listbox for use when logging in
+                    selectStudent.options[selectStudent.options.length] = new Option(child.key, child.key);
+                });
+            } else {
+                console.log("No data available");
+            }
+        }).catch((error) => {
+        console.error(error);
+        });
+        
+        
+        // Setting formmatted datetime information for the header
         document.getElementById("date-time").innerHTML = currentDate.toLocaleDateString('en-us', format);
 
+        // Function for checking if a day has passed to update the current day in the header
         function hasOneDayPassed() {
             var date = new Date().toLocaleDateString();
             if( localStorage.scrumDate == date ) 
@@ -42,13 +88,40 @@
             return true;
         }
 
+
+        //et(child(dbRef, `Users/Interns/${username}`))
+        // get(child(dbRef, `Users/Interns/${username}`)).then((snapshot) => {
+        // }).catch((error) => {
+        //     console.error(error);
+        // });
+        // Chooses the next scrum leader by indexing who is who
+
         function chooseScrumLeader(){
-            if(localStorage.getItem("scrumLeader", interns[localStorage.iterator]) === null){
-                localStorage.iterator = 0;
-                localStorage.setItem("scrumLeader", interns[localStorage.iterator]);
-            }
+            
+            get(child(dbRef, `ScrumLeader`)).then((snapshot) => {
+                
+                if(snapshot.val() === "Intern"){
+                    // set(ref(dbRef, 'ScrumLeader'), {
+                    //     ScrumLeader: "name"
+                    // });
+                    const newPostKey = push(child(dbRef, 'ScrumLeader')).key;
+                    console.log(newPostKey);
+                    const updates = "test";
+                    update(dbRef, updates);
+                }
+            }).catch((error) => {
+                console.error(error);
+            });
+            
             if(!hasOneDayPassed()){
-                localStorage.setItem("scrumLeader", interns[localStorage.iterator]);
+                
+                get(child(dbRef, `ScrumLeader`)).then((snapshot) => {
+                
+
+                }).catch((error) => {
+                    console.error(error);
+                });
+            
             }else if (currentDate.getDay() != 0 || currentDate.getDay() != 6){
                 if (localStorage.iterator >= interns.length-2){
                     localStorage.iterator = 0;
@@ -60,51 +133,80 @@
             document.getElementById("scrum-leader").innerHTML = localStorage.getItem("scrumLeader");
         }
 
+
+
+        // function chooseScrumLeader(){
+        //     if(localStorage.getItem("scrumLeader", interns[localStorage.iterator]) === null){
+        //         localStorage.iterator = 0;
+        //         localStorage.setItem("scrumLeader", interns[localStorage.iterator]);
+        //     }
+        //     if(!hasOneDayPassed()){
+        //         localStorage.setItem("scrumLeader", interns[localStorage.iterator]);
+        //     }else if (currentDate.getDay() != 0 || currentDate.getDay() != 6){
+        //         if (localStorage.iterator >= interns.length-2){
+        //             localStorage.iterator = 0;
+        //         }else{
+        //             writeLocalStorage();
+        //             localStorage.iterator = Number(localStorage.iterator)+1;
+        //         }
+        //     }
+        //     document.getElementById("scrum-leader").innerHTML = localStorage.getItem("scrumLeader");
+        // }
+
         var selectStudent = document.getElementById("interns");
-        for(intern in interns) {
-            selectStudent.options[selectStudent.options.length] = new Option(interns[intern], intern);
-        }
-
-
-        function writeLocalStorage(){
-            Object.keys(data).forEach(function(key) { localStorage.setItem(key, data[key])})
-        }
-
-        function getLocalStorage() {
-            return JSON.stringify(localStorage)
-        }
 
         chooseScrumLeader();
-    </script>
 
-    <script>
+        /*  
+        *   Logic for logging in & changing of passwords 
+        */  
         const loginForm = document.getElementById("login-form");
         const loginButton = document.getElementById("login-form-submit");
         const loginErrorMsg = document.getElementById("login-error-msg");
         const afterLogin = document.getElementById("after-login");
 
-
+        // Forces users to change their password on first login
         loginButton.addEventListener("click", (e) => {
             e.preventDefault();
             const selectUsername = document.getElementById("interns");
             const username = selectUsername.options[selectUsername.selectedIndex].text;
             const password = loginForm.password.value;
-            //alert(localStorage.getItem(username))
-            if (localStorage.getItem(username) === null){
-                if ( password !== ""){
-                    let confirmPassword = prompt("Please confirm your password:", "");
-                    if (confirmPassword === password){
-                        localStorage.setItem(username, password);
-                    }else{
-                        alert("Passwords did not match")
+            get(child(dbRef, `Users/Interns/${username}`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    if (snapshot.val() === "Summer20"){
+                    if ( password !== ""){
+                        if (password === snapshot.val()){
+                            let createPassword = prompt("Please create a new password:", "");
+                            let confirmPassword = prompt("Please confirm your password:", "");
+                            if (createPassword === confirmPassword){
+                                //localStorage.setItem(username, password);
+                                //writeUserData(username, password);
 
-                    }
-                }else{
-                    alert("Password cannot be empty")
-                }                
+                            }else{
+                                alert("Passwords did not match")
+                                
+                            }
+                        }else{
+                            alert
+                        }
+
+                    }else{
+                        alert("Password cannot be empty")
+                    }                
+                } else {
+                    console.log("No data available");
+                }
             }
 
-            if (password === localStorage.getItem(username)) {
+            }).catch((error) => {
+                console.error(error);
+            });
+            
+            // Logs users in and redirects them to their home page
+            // Fartab is redirected to an admin page
+            get(child(dbRef, `Users/Interns/${username}`)).then((snapshot) => {
+
+                if (password === snapshot.val() && snapshot.val() !== "Summer20") {
                 //alert("You have successfully logged in.");
                 sessionStorage.setItem("user", username);
                 sessionStorage.setItem("scrumLeader", localStorage.getItem("scrumLeader"));
@@ -113,12 +215,14 @@
                 }else{
                     window.location.href="loggedin.html";
                 }
-            } else {
-                loginErrorMsg.style.opacity = 1;
-            }
+                } else {
+                    loginErrorMsg.style.opacity = 1;
+                }
+            
+            }).catch((error) => {
+                console.error(error);
+            });
         })
-
-
     </script>
 
 </html>
