@@ -56,6 +56,8 @@
         */  
         const currentDate = new Date();
         const format = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+        const internsLocal = ["Kevin", "Fatima", "Rubbia", "Eman", "Haneeah", "Saffana", "Mathew", "Faraaz", "Owen", "Ian", "Rayyan", "Ayesha", "Ahmed", "Shadea", "Fartab"];
+
         let interns = [];
         
         // Getting all of the interns information from the database
@@ -139,7 +141,7 @@
                         index++;
                         
                     }
-                    updates['ChooseLeader/ScrumLeader/'] = interns[index];
+                    updates['ChooseLeader/ScrumLeader/'] = internsLocal[index];
                     updates['ChooseLeader/Index/'] = index;
                     update(dbRef, updates);
                 }   
@@ -155,9 +157,9 @@
             console.error(error);
         });
                                     
-        while(sessionStorage.getItem("scrumLeader") === null){
-            setTimeout('', 5);
-        }
+        // while(sessionStorage.getItem("scrumLeader") === null){
+        //     setTimeout('', 5);
+        // }
         document.getElementById("scrum-leader").innerHTML = sessionStorage.getItem("scrumLeader");
         var selectStudent = document.getElementById("interns");
 

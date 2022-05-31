@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <title>
+        Welcome
+    </title>
+    <body>
+        <div class="content">
+            <h1>Scrum Leader for <span id='date-time'></span> is <span id='scrum-leader'></span></h1>
+            <!-- <button onclick="prevPerson()">Prev</button>
+            <button onclick="skipPerson()">Skip</button>
+            <p>Last skip made by <span id='last-changed'></span></p> -->
+            <hr>
+            <h2>Welcome <span id='current-user'></span></h2>
+            <h4>You are the Scrum Master <span id='days-until-master'></span></h4>
+            <h3>Please enter your Scrum Report</h3>
+            
+            <textarea id="scrum-report" name="Text" rows="4" cols="50" value=""></textarea>
+                <br><br>
+            <input type="submit" onclick="submitButton()" value="Submit/Logout">
+
+            <br><br>
+
+            <h3>Past reports</h3>
+            <table id="scrum-reports">
+                <tr>
+                  <th>Date</th>
+                  <th>Report</th>
+                </tr>
+
+
+            </table>
+        </div>
+    </body>
+
+    <script>
+        const currentDate = new Date();
+        const format = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+        const internsLocal = ["Kevin", "Fatima", "Rubbia", "Eman", "Haneeah", "Saffana", "Mathew", "Faraaz", "Owen", "Ian", "Rayyan", "Ayesha", "Ahmed", "Shadea", "Fartab"];
+
+        document.getElementById("date-time").innerHTML = currentDate.toLocaleDateString('en-us', format);
+        document.getElementById("scrum-leader").innerHTML = sessionStorage.getItem("scrumLeader");
+        //document.getElementById("last-changed").innerHTML = localStorage.getItem("lastUsedChange");
+        if (sessionStorage.getItem("user") === null){
+            window.location.href="index.html";
+        }
+
+
+
+
+        function submitButton(){
+            if(confirm("Confirm submission? You will be logged out.\n\n\"" + document.getElementById("scrum-report").value + "\"")){
+                let usrReport = sessionStorage.getItem("user") + "Report";
+                sessionStorage.setItem(usrReport, document.getElementById("scrum-report").value);
+                window.location.href="index.html";
+            }
+            
+            
+        }
+        
+        // function prevPerson(){
+            
+        //     //alert(localStorage.iterator);
+        //     if (localStorage.iterator > 0){
+        //         localStorage.iterator = Number(localStorage.iterator)-1;
+        //     }else{
+        //         localStorage.iterator = 13;
+        //     }
+        //     sessionStorage.setItem("scrumLeader", internsLocal[localStorage.iterator]);
+        //     localStorage.setItem("scrumLeader", internsLocal[localStorage.iterator]);
+        //     document.getElementById("scrum-leader").innerHTML = localStorage.getItem("scrumLeader");
+
+        //     localStorage.setItem("lastUsedChange", sessionStorage.getItem("user"));
+        //     document.getElementById("last-changed").innerHTML = localStorage.getItem("lastUsedChange");
+
+        // }
+
+        // function skipPerson(){
+        //     //localStorage.setItem("scrumLeader", internsLocal[localStorage.iterator]);
+        //     //alert(localStorage.iterator);
+        //     if (localStorage.iterator < 13){
+        //         localStorage.iterator = Number(localStorage.iterator)+1;
+        //     }else{
+        //         localStorage.iterator = 0;
+        //     }
+        //     sessionStorage.setItem("scrumLeader", internsLocal[localStorage.iterator]);
+        //     localStorage.setItem("scrumLeader", internsLocal[localStorage.iterator]);
+        //     document.getElementById("scrum-leader").innerHTML = localStorage.getItem("scrumLeader");
+
+        //     localStorage.setItem("lastUsedChange", sessionStorage.getItem("user"));
+        //     document.getElementById("last-changed").innerHTML = localStorage.getItem("lastUsedChange");
+
+        // }
+
+        document.getElementById("current-user").innerHTML = sessionStorage.getItem("user");
+
+    </script>
+    <script type="module">
+        // Importing & initializing Firebase database
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-app.js";
+        import { getDatabase, ref, set, child, push, get, update } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-database.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyBaLJDFm7oG1KsIqDOnZFwmH4ITr60Zk9U",
+            authDomain: "scrumleader-d1283.firebaseapp.com",
+            databaseURL: "https://scrumleader-d1283-default-rtdb.firebaseio.com",
+            projectId: "scrumleader-d1283",
+            storageBucket: "scrumleader-d1283.appspot.com",
+            messagingSenderId: "315809210687",
+            appId: "1:315809210687:web:2f9a62abdaf4ebb540f38a",
+            measurementId: "G-TSYJ61YPH7"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+
+        const database = getDatabase(app);
+        const dbRef = ref(getDatabase());
+
+           
+        get(child(dbRef, `Reports/${sessionStorage.getItem("user")}/`)).then((snapshot) => {
+            if (snapshot.exists()) {
+                snapshot.forEach(function(report) {
+                    let scrumReportRow = document.createElement('tr');
+
+                    let scrumName = document.createElement('td');
+                    scrumName.innerHTML = report.key;
+
+                    let scrumReport = document.createElement('td');
+                    scrumReport.innerHTML = report.child("/report").val();
+                    
+
+
+                    document.getElementById("scrum-reports").appendChild(scrumReportRow);
+                    scrumReportRow.appendChild(scrumName);
+                    scrumReportRow.appendChild(scrumReport);
+                });
+            }
+        }).catch((error) => {
+            console.error(error);
+        });
+
+        get(child(dbRef, `ChooseLeader/ScrumLeader/`)).then((SL) => {
+            //sessionStorage.setItem("scrumLeader", SL.val());
+
+            if (internsLocal.indexOf(SL.val()) > internsLocal.indexOf(sessionStorage.getItem("user"))){
+            let nextVal =  internsLocal.length - (internsLocal.indexOf(SL.val()) - internsLocal.indexOf(sessionStorage.getItem("user")))-1;
+            if (nextVal === 1){
+                document.getElementById("days-until-master").innerHTML = "TOMORROW";
+            }else{
+                document.getElementById("days-until-master").innerHTML = "in " + nextVal + " days";
+            }
+            }else if (internsLocal.indexOf(SL.val()) < internsLocal.indexOf(sessionStorage.getItem("user"))){
+                nextVal = internsLocal.indexOf(sessionStorage.getItem("user")) - internsLocal.indexOf(SL.val());
+                if (nextVal === 1){
+                    document.getElementById("days-until-master").innerHTML = "TOMORROW";
+                }else{
+                    document.getElementById("days-until-master").innerHTML = "in " + nextVal + " days";
+                }
+            }else{
+                document.getElementById("days-until-master").innerHTML = "TODAY";
+            }
+        }).catch((error) => {
+            console.error(error);
+        });
+
+        </script>
+
+</html>

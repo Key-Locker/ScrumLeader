@@ -1,5 +1,25 @@
 {
   "dependencies": {
-    "firebase": "^9.8.1"
-  }
+    "firebase": "^9.8.2"
+  },
+  "name": "scrumleader",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {
+    "firebase-server": "^1.1.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MathewMigliore/ScrumLeader.git"
+  },
+  "author": "Mathew Migliore",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MathewMigliore/ScrumLeader/issues"
+  },
+  "homepage": "https://github.com/MathewMigliore/ScrumLeader#readme",
+  "description": "For the co-ops"
 }

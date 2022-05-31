@@ -1,89 +1,262 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+    <head>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <title>
+        Scrum Leader
+    </title>
+    <body>
+        <div class="content">
+            <h1>Scrum Leader for <span id='date-time'></span> is <span id='scrum-leader'></span></h1>
+            
+            <hr>
+            <select id="interns">
+            </select>
+            <!-- <button onclick="writeLocalStorage()"></button> -->
+            <form id="login-form">
+                <div class="password">
+                    <input type="password" placeholder="Enter Password" name="password" id="password-field" required>
+                    <input type="submit" value="Login" id="login-form-submit">    
+                </div>
+                <div>
+                    <p id="login-error-msg">Invalid password</p>
+                </div>
+            </form>
+        </div>
+    </body>
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/9.8.1/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/9.8.1/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/9.8.1/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/9.8.1/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/9.8.1/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/9.8.1/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/9.8.1/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/9.8.1/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/9.8.1/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/9.8.1/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script></head>
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
-    </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
+    <script type="module">
+        //const interns = ["Kevin", "Fatima", "Rubbia", "Eman", "Haneeah", "Saffana", "Mathew", "Faraaz", "Owen", "Ian", "Rayyan", "Ayesha", "Ahmed", "Fartab"];
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+        // Importing & initializing Firebase database
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-app.js";
+        import { getDatabase, ref, set, child, push, get, update } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-database.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyBaLJDFm7oG1KsIqDOnZFwmH4ITr60Zk9U",
+            authDomain: "scrumleader-d1283.firebaseapp.com",
+            databaseURL: "https://scrumleader-d1283-default-rtdb.firebaseio.com",
+            projectId: "scrumleader-d1283",
+            storageBucket: "scrumleader-d1283.appspot.com",
+            messagingSenderId: "315809210687",
+            appId: "1:315809210687:web:2f9a62abdaf4ebb540f38a",
+            measurementId: "G-TSYJ61YPH7"
+        };
+        
+        const app = initializeApp(firebaseConfig);
 
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
+        const database = getDatabase(app);
+        const dbRef = ref(getDatabase());
+
+
+        /*  
+        *   Main scripts of the website
+        */  
+        const currentDate = new Date();
+        const format = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+        const internsLocal = ["Kevin", "Fatima", "Rubbia", "Eman", "Haneeah", "Saffana", "Mathew", "Faraaz", "Owen", "Ian", "Rayyan", "Ayesha", "Ahmed", "Shadea", "Fartab"];
+
+        let interns = [];
+        
+        // Getting all of the interns information from the database
+        get(child(dbRef, `Users/Interns`)).then((snapshot) => {
+            if (snapshot.exists()) {
+                snapshot.forEach(function(child) {
+                    //console.log(child.key+": "+child.val());
+                    
+                    // Creating an array with all of the interns names
+                    interns.push(child.key);
+
+                    // Setting each name to a dropdown listbox for use when logging in
+                    selectStudent.options[selectStudent.options.length] = new Option(child.key, child.key);
+                });
+            } else {
+                console.log("No data available");
+            }
+        }).catch((error) => {
+            console.error(error);
+        });
+        
+        
+        // Setting formmatted datetime information for the header
+        document.getElementById("date-time").innerHTML = currentDate.toLocaleDateString('en-us', format);
+
+        // Function for checking if a day has passed to update the current day in the header
+        function hasOneDayPassed() {
+            get(child(dbRef, `ChooseLeader/Date/`)).then((snapshot) => {
+                const curDate = currentDate.toLocaleDateString("en-US").replace("/", "-").replace("/", "-");
+
+                if(snapshot.val() === curDate)
+                    return false;
+                    
+                const updates = {};
+                updates['ChooseLeader/Date/'] = curDate;
+                update(dbRef, updates);
+                
+                return true;
+            }).catch((error) => {
+                console.error(error);
+            });
         }
-      });
+
+
+        //get(child(dbRef, `Users/Interns/${username}`))
+        // get(child(dbRef, `Users/Interns/${username}`)).then((snapshot) => {
+        // }).catch((error) => {
+        //     console.error(error);
+        // });
+
+
+        // Chooses the next scrum leader by indexing who is who
+
+        function chooseScrumLeader(){
+            
+            // get(child(dbRef, `ChooseLeader/ScrumLeader/`)).then((snapshot) => {
+                
+            //     if(snapshot.val() === "Intern"){
+
+            //         const updates = {};
+            //         updates['ChooseLeader/ScrumLeader/'] = "Kevin";
+            //         updates['ChooseLeader/Index/'] = 1;
+            //         update(dbRef, updates);
+                    
+            //     }
+            // }).catch((error) => {
+            //     console.error(error);
+            // });
+            
+            if(!hasOneDayPassed()) return false;
+
+            get(child(dbRef, `ChooseLeader/`)).then((snapshot) => {
+
+                if (currentDate.getDay() != 0 || currentDate.getDay() != 6){
+                    //let indexOfNewIntern = interns.indexOf(snapshot.val())
+                    let pastScrumLeader = snapshot.child("ScrumLeader/").val();
+                    let index = snapshot.child("Index/").val();
+                    const updates = {};
+                    
+                    if (index >= internsLocal.length-2){
+                        index = 0;
+                    }else{
+                        index++;
+                        
+                    }
+                    updates['ChooseLeader/ScrumLeader/'] = internsLocal[index];
+                    updates['ChooseLeader/Index/'] = index;
+                    update(dbRef, updates);
+                }   
+
+
+            }).catch((error) => {
+                console.error(error);
+            });    
+        }
+
+
+                                    
+        setTimeout('', 5);
+        get(child(dbRef, `ChooseLeader/ScrumLeader/`)).then((SL) => {
+            sessionStorage.setItem("scrumLeader", SL.val());
+        }).catch((error) => {
+            console.error(error);
+        });
+        document.getElementById("scrum-leader").innerHTML = sessionStorage.getItem("scrumLeader");
+        var selectStudent = document.getElementById("interns");
+
+        chooseScrumLeader();
+
+        /*  
+        *   Logic for logging in & changing of passwords 
+        */  
+        const loginForm = document.getElementById("login-form");
+        const loginButton = document.getElementById("login-form-submit");
+        const loginErrorMsg = document.getElementById("login-error-msg");
+        const afterLogin = document.getElementById("after-login");
+
+        // Forces users to change their password on first login
+        loginButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            const selectUsername = document.getElementById("interns");
+            const username = selectUsername.options[selectUsername.selectedIndex].text;
+            const password = loginForm.password.value;
+            get(child(dbRef, `Users/Interns/${username}`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    if (snapshot.val() === "Summer20"){
+                        if ( password !== ""){
+                            if (password === snapshot.val()){
+                                let passwordNotChanged = true;
+                                while (passwordNotChanged){
+                                    let createPassword = prompt("Please create a new password:", "");
+                                    let confirmPassword = prompt("Please confirm your password:", "");
+                                    if (createPassword === confirmPassword){
+                                        var encrptedText = CryptoJS.MD5(confirmPassword);
+                                        const passwordUpdates = {};
+                                        passwordUpdates[`Users/Interns/${username}`] = encrptedText.toString();
+                                        update(dbRef, passwordUpdates);
+                                        passwordNotChanged = false;
+
+                                    }else{
+                                        alert("Passwords did not match")
+                                    }
+                                }
+                                sessionStorage.setItem("user", username);
+                                if (username === "Fartab"){
+                                    window.location.href="loggedinadmin.html";
+                                }else{
+                                    window.location.href="loggedin.html";
+                                }
+                            }
+                        }else{
+                            alert("Password cannot be empty")
+                        }                
+                    } else {
+                        var encrptedText = CryptoJS.MD5(password);
+                        if (encrptedText.toString() === snapshot.val()) {
+                            //alert(snapshot.val());
+                            sessionStorage.setItem("user", username);
+
+                            if (username === "Fartab"){
+                                window.location.href="loggedinadmin.html";
+                            }else{
+                                window.location.href="loggedin.html";
+                            }
+                        } else {
+                            loginErrorMsg.style.opacity = 1;
+                        }
+                    }
+                }
+
+            }).catch((error) => {
+                console.error(error);
+            });
+            
+            // Logs users in and redirects them to their home page
+            // Fartab is redirected to an admin page
+        })
+
+        // var encrptedText = CryptoJS.MD5("testPass");
+        // alert(encrptedText);
+        // alert(CryptoJS.MD5(encrptedText));
+
+        if (sessionStorage.getItem(sessionStorage.getItem("user") + "Report") !== null){
+            //alert(currentDate.toLocaleDateString("en-US"));
+            const reports = {};
+            const curDate = currentDate.toLocaleDateString("en-US").replace("/", "-").replace("/", "-");
+
+            set(child(dbRef, `Reports/${sessionStorage.getItem("user")}/${curDate}/`),{
+                report: sessionStorage.getItem(sessionStorage.getItem("user") + "Report")
+            }); 
+
+            //reports[`Reports/${sessionStorage.getItem("user")}/${currentDate.toLocaleDateString("en-US")}`] = interns[index];
+            //update(dbRef, reports);
+            sessionStorage.clear();
+            // get(child(dbRef, `Reports/${sessionStorage.getItem("user")}/`)).then((snapshot) => {
+            // }).catch((error) => {
+            //     console.error(error);
+            // });
+        }
     </script>
-  </body>
+
 </html>

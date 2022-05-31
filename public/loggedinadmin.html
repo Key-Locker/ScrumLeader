@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <title>
+        Welcome
+    </title>
+    <body>
+        <div class="content">
+            <h1>Welcome <span id='current-user'></span></h1>
+            
+            <hr>
+            <h3>All Scrum Reports</h3>
+            <div id="date-picker">
+                <input type="date">
+                <button id="queryData">Query</button>  
+            </div>
+
+
+
+
+            <table id="scrum-reports">
+                <tr>
+                  <th>Name</th>
+                  <th>Report</th>
+                </tr>
+
+
+            </table>
+        </div>
+    </body>
+    <script type="module">
+        if (sessionStorage.getItem("user") !== "Fartab"){
+            alert("Not an admin");
+            window.location.href="index.html";
+        }
+
+
+        // Importing & initializing Firebase database
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-app.js";
+        import { getDatabase, ref, set, child, push, get, update } from "https://www.gstatic.com/firebasejs/9.1.1/firebase-database.js";
+        const firebaseConfig = {
+            apiKey: "AIzaSyBaLJDFm7oG1KsIqDOnZFwmH4ITr60Zk9U",
+            authDomain: "scrumleader-d1283.firebaseapp.com",
+            databaseURL: "https://scrumleader-d1283-default-rtdb.firebaseio.com",
+            projectId: "scrumleader-d1283",
+            storageBucket: "scrumleader-d1283.appspot.com",
+            messagingSenderId: "315809210687",
+            appId: "1:315809210687:web:2f9a62abdaf4ebb540f38a",
+            measurementId: "G-TSYJ61YPH7"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+
+        const database = getDatabase(app);
+        const dbRef = ref(getDatabase());
+
+        const interns = ["Kevin", "Fatima", "Rubbia", "Eman", "Haneeah", "Saffana", "Mathew", "Faraaz", "Owen", "Ian", "Rayyan", "Ayesha", "Ahmed"];
+        const currentDate = new Date();
+        const formattedDate = currentDate.toLocaleDateString("en-US").replace("/", "-").replace("/", "-");
+
+        document.getElementById("current-user").innerHTML = sessionStorage.getItem("user");
+
+        var dateControl = document.querySelector('input[type="date"]');
+        if (dateControl.value === ""){
+            
+            dateControl.value = currentDate.toISOString().split('T')[0];
+        }
+
+
+        for (let intern of interns) {
+
+            
+            get(child(dbRef, `Reports/${intern}/${formattedDate}/`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                    snapshot.forEach(function(report) {
+                        let scrumReportRow = document.createElement('tr');
+
+                        let scrumName = document.createElement('td');
+                        scrumName.innerHTML = intern;
+
+                        let scrumReport = document.createElement('td');
+                        scrumReport.innerHTML = report.val();
+                        
+
+
+                        document.getElementById("scrum-reports").appendChild(scrumReportRow);
+                        scrumReportRow.appendChild(scrumName);
+                        scrumReportRow.appendChild(scrumReport);
+                    });
+                } else {
+                    let scrumReportRow = document.createElement('tr');
+
+                    let scrumName = document.createElement('td');
+                    scrumName.innerHTML = intern;
+
+                    let scrumReport = document.createElement('td');
+                    scrumReport.innerHTML = "N/A";
+                    
+
+
+                    document.getElementById("scrum-reports").appendChild(scrumReportRow);
+                    scrumReportRow.appendChild(scrumName);
+                    scrumReportRow.appendChild(scrumReport);
+                }
+            }).catch((error) => {
+                console.error(error);
+            });
+        }
+
+
+
+
+
+        var btnQD = document.getElementById("queryData");
+
+         btnQD.onclick = function queryData(){
+            dateControl = document.querySelector('input[type="date"]');
+            const dateArray = dateControl.value.split("-");
+            const formatDate = dateArray[1].replace("0", "") + "-" + dateArray[2].replace("0", "") + "-" + dateArray[0];
+            const interns = ["Kevin", "Fatima", "Rubbia", "Eman", "Haneeah", "Saffana", "Mathew", "Faraaz", "Owen", "Ian", "Rayyan", "Ayesha", "Ahmed",  "Shadea"];
+            
+            document.getElementById("scrum-reports").innerHTML = "";
+            let scrumReportRow = document.createElement('tr');
+
+            let scrumName = document.createElement('th');
+            scrumName.innerHTML = "Name";
+
+            let scrumReport = document.createElement('th');
+            scrumReport.innerHTML = "Report";
+            
+            document.getElementById("scrum-reports").appendChild(scrumReportRow);
+            scrumReportRow.appendChild(scrumName);
+            scrumReportRow.appendChild(scrumReport);
+
+            for (let intern of interns) {
+
+            
+                get(child(dbRef, `Reports/${intern}/${formatDate}/`)).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        snapshot.forEach(function(report){
+                            console.log(child.key+": "+report.val() + intern);
+                            let scrumReportRow = document.createElement('tr');
+
+                            let scrumName = document.createElement('td');
+                            scrumName.innerHTML = intern;
+
+                            let scrumReport = document.createElement('td');
+                            scrumReport.innerHTML = report.val();
+                            
+
+
+                            document.getElementById("scrum-reports").appendChild(scrumReportRow);
+                            scrumReportRow.appendChild(scrumName);
+                            scrumReportRow.appendChild(scrumReport);
+                        });
+                    } else {
+                        let scrumReportRow = document.createElement('tr');
+
+                        let scrumName = document.createElement('td');
+                        scrumName.innerHTML = intern;
+
+                        let scrumReport = document.createElement('td');
+                        scrumReport.innerHTML = "N/A";
+                        
+
+
+                        document.getElementById("scrum-reports").appendChild(scrumReportRow);
+                        scrumReportRow.appendChild(scrumName);
+                        scrumReportRow.appendChild(scrumReport);
+                    }
+                }).catch((error) => {
+                    console.error(error);
+                });
+            }
+            return 0;
+        }
+        
+
+
+
+
+
+
+        
+    </script>
+
+</html>

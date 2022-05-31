@@ -1,0 +1,41 @@
+.content {
+    max-width: 80%;
+    text-align: center;
+    margin: auto;
+  }
+.password{
+    margin-top: 25px;
+    margin-bottom: 0px;
+}
+#date-picker{
+    padding-bottom: 1rem;
+}
+#interns{
+    margin-top: 20px;
+}
+#login-error-msg {
+    font-size: 12px;
+    font-weight: bold;
+    color: #ff0000;
+    opacity: 0;
+  }
+
+#after-login{
+    opacity: 0;
+}
+#scrumInput{
+    resize:both;
+}
+
+table{
+    border-collapse: collapse;
+    border-spacing: 0;
+    text-align: left;
+    margin-left: auto;
+    margin-right: auto;
+}
+th, td{
+    padding: 10px 20px;
+    border: 1px solid #000;
+    word-wrap: normal;
+}

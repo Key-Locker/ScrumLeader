@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "scrumleader-d1283"
-  }
+    "default": "scrumleader-d1283",
+    "Project": "scrumleader-d1283"
+  },
+  "targets": {}
 }
