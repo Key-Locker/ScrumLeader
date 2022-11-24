@@ -87,13 +87,37 @@
         function hasOneDayPassed() {
             get(child(dbRef, `ChooseLeader/Date/`)).then((snapshot) => {
                 const curDate = currentDate.toLocaleDateString("en-US").replace("/", "-").replace("/", "-");
-
+                // if (currentDate.getDay() != 0 || currentDate.getDay() != 6)
+                //     console.error(currentDate.getDay());
                 if(snapshot.val() === curDate)
                     return false;
                     
                 const updates = {};
                 updates['ChooseLeader/Date/'] = curDate;
                 update(dbRef, updates);
+                get(child(dbRef, `ChooseLeader/`)).then((snapshot) => {
+                   
+                    if (currentDate.getDay() != 0 && currentDate.getDay() != 6 && currentDate.getDay() != 5){
+                        //let indexOfNewIntern = interns.indexOf(snapshot.val())
+                        let pastScrumLeader = snapshot.child("ScrumLeader/").val();
+                        let index = snapshot.child("Index/").val();
+                        const updates = {};
+                        
+                        if (index >= internsLocal.length-2){
+                            index = 0;
+                        }else{
+                            index++;
+                            
+                        }
+                        updates['ChooseLeader/ScrumLeader/'] = internsLocal[index];
+                        updates['ChooseLeader/Index/'] = index;
+                        update(dbRef, updates);
+                    }   
+
+
+                }).catch((error) => {
+                    console.error(error);
+                });    
                 
                 return true;
             }).catch((error) => {
@@ -125,44 +149,21 @@
             //     }
             // }).catch((error) => {
             //     console.error(error);
-            // });
+            // }); 5-31-2022
             
             if(!hasOneDayPassed()) return false;
-
-            get(child(dbRef, `ChooseLeader/`)).then((snapshot) => {
-
-                if (currentDate.getDay() != 0 || currentDate.getDay() != 6){
-                    //let indexOfNewIntern = interns.indexOf(snapshot.val())
-                    let pastScrumLeader = snapshot.child("ScrumLeader/").val();
-                    let index = snapshot.child("Index/").val();
-                    const updates = {};
-                    
-                    if (index >= internsLocal.length-2){
-                        index = 0;
-                    }else{
-                        index++;
-                        
-                    }
-                    updates['ChooseLeader/ScrumLeader/'] = internsLocal[index];
-                    updates['ChooseLeader/Index/'] = index;
-                    update(dbRef, updates);
-                }   
-
-
-            }).catch((error) => {
-                console.error(error);
-            });    
+            
         }
 
 
                                     
-        setTimeout('', 5);
         get(child(dbRef, `ChooseLeader/ScrumLeader/`)).then((SL) => {
             sessionStorage.setItem("scrumLeader", SL.val());
+            document.getElementById("scrum-leader").innerHTML = sessionStorage.getItem("scrumLeader");
         }).catch((error) => {
             console.error(error);
         });
-        document.getElementById("scrum-leader").innerHTML = sessionStorage.getItem("scrumLeader");
+        
         var selectStudent = document.getElementById("interns");
 
         chooseScrumLeader();

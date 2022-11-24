@@ -14,7 +14,7 @@
             <p>Last skip made by <span id='last-changed'></span></p> -->
             <hr>
             <h2>Welcome <span id='current-user'></span></h2>
-            <h4>You are the Scrum Master <span id='days-until-master'></span></h4>
+            <h4>You will be the Scrum Master <span id='days-until-master'></span></h4>
             <h3>Please enter your Scrum Report</h3>
             
             <textarea id="scrum-report" name="Text" rows="4" cols="50" value=""></textarea>
@@ -26,8 +26,8 @@
             <h3>Past reports</h3>
             <table id="scrum-reports">
                 <tr>
-                  <th>Date</th>
-                  <th>Report</th>
+                  <!-- <th>Date</th>
+                  <th>Report</th> -->
                 </tr>
 
 
@@ -131,10 +131,24 @@
                     
 
 
-                    document.getElementById("scrum-reports").appendChild(scrumReportRow);
+                    document.getElementById("scrum-reports").prepend(scrumReportRow);
                     scrumReportRow.appendChild(scrumName);
                     scrumReportRow.appendChild(scrumReport);
                 });
+                let scrumReportRow = document.createElement('tr');
+
+                let scrumName = document.createElement('th');
+                scrumName.innerHTML = "Date";
+
+                let scrumReport = document.createElement('th');
+                scrumReport.innerHTML = "Report"
+                
+
+
+                document.getElementById("scrum-reports").prepend(scrumReportRow);
+                scrumReportRow.appendChild(scrumName);
+                scrumReportRow.appendChild(scrumReport);
+
             }
         }).catch((error) => {
             console.error(error);
@@ -144,14 +158,14 @@
             //sessionStorage.setItem("scrumLeader", SL.val());
 
             if (internsLocal.indexOf(SL.val()) > internsLocal.indexOf(sessionStorage.getItem("user"))){
-            let nextVal =  internsLocal.length - (internsLocal.indexOf(SL.val()) - internsLocal.indexOf(sessionStorage.getItem("user")))-1;
-            if (nextVal === 1){
-                document.getElementById("days-until-master").innerHTML = "TOMORROW";
-            }else{
-                document.getElementById("days-until-master").innerHTML = "in " + nextVal + " days";
-            }
+                let nextVal =  internsLocal.length - (internsLocal.indexOf(SL.val()) - internsLocal.indexOf(sessionStorage.getItem("user")))-1;
+                if (nextVal === 1){
+                    document.getElementById("days-until-master").innerHTML = "TOMORROW";
+                }else{
+                    document.getElementById("days-until-master").innerHTML = "in " + nextVal + " days";
+                }
             }else if (internsLocal.indexOf(SL.val()) < internsLocal.indexOf(sessionStorage.getItem("user"))){
-                nextVal = internsLocal.indexOf(sessionStorage.getItem("user")) - internsLocal.indexOf(SL.val());
+                let nextVal = internsLocal.indexOf(sessionStorage.getItem("user")) - internsLocal.indexOf(SL.val());
                 if (nextVal === 1){
                     document.getElementById("days-until-master").innerHTML = "TOMORROW";
                 }else{
